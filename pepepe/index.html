@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gudang Preset AM - Organized</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .active-tab { border-bottom: 3px solid #60a5fa; color: #60a5fa; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans pb-10">
+
+    <header class="p-6 bg-gray-800 border-b border-gray-700 sticky top-0 z-20">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-2xl font-bold text-blue-400"><i class="fas fa-layer-group mr-2"></i>Preset AM</h1>
+            <input type="text" id="searchInput" placeholder="Cari judul preset..." 
+                class="w-full md:w-64 p-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500 text-sm">
+        </div>
+    </header>
+
+    <nav class="bg-gray-800 border-b border-gray-700 sticky top-[81px] md:top-[73px] z-10 overflow-x-auto">
+        <div class="max-w-5xl mx-auto flex whitespace-nowrap px-4 cursor-pointer" id="categoryTabs">
+            <h1 class="text-2xl font-bold text-blue-400">Semua preset tersedia disini, dan akan update setiap harinya</h1>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-6">
+        <div id="presetContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+    </main>
+
+    <script>
+        // DATA PRESET
+        const presets = [
+            { title: "JJ Kece Mengkane", category: "jj Kece", link: "jjfullbas.html" },
+            { title: "Slow Motion Aesthetic", category: "JJ Slow", link: "#" },
+            { title: "Full Bass", category: "JJ Full Bass", link: "#" },
+            { title: "Sinematic", category: "Lainnya", link: "#" },
+            { title: "Preset Collab Ber-2", category: "JJ Kece", link: "#" },
+            { title: "Preset Collab Ber-4", category: "JJ Kece", link: "#" },
+            { title: "JJ Tipis", category: "JJ Kece", link: "#" },
+            { title: "Slowmo Smooth 60FPS", category: "JJ Slow", link: "#" }
+        ];
+
+        let currentCategory = 'All';
+        const container = document.getElementById('presetContainer');
+        const searchInput = document.getElementById('searchInput');
+
+        function displayPresets(data) {
+            container.innerHTML = '';
+            if(data.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">Preset tidak ditemukan...</p>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = `
+                    <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:scale-[1.02] transition-transform shadow-lg">
+                        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <span class="text-[10px] uppercase font-black px-2 py-1 bg-gray-900 text-blue-400 tracking-wider rounded">${item.category}</span>
+                            <span class="text-[10px] text-gray-500">${item.date}</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold mb-5 line-clamp-1">${item.title}</h3>
+                            <div class="flex gap-2">
+                                <a href="${item.link}" target="_blank" 
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-center py-2.5 rounded-lg text-xs font-black uppercase transition shadow-lg shadow-blue-900/20">
+                                    Import Preset
+                                </a>
+                                <button onclick="copyLink('${item.link}')" 
+                                    class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition border border-gray-600">
+                                    <i class="fas fa-copy text-sm text-gray-300"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        // Fungsi Filter Kategori
+        function filterCategory(cat) {
+            currentCategory = cat;
+            
+            // Update UI Tab
+            document.querySelectorAll('#categoryTabs div').forEach(el => el.classList.remove('active-tab'));
+            const safeId = cat.replace(/\s+/g, '-');
+            document.getElementById(`tab-${safeId}`).classList.add('active-tab');
+
+            // Filter Data
+            const filtered = cat === 'All' ? presets : presets.filter(p => p.category === cat);
+            displayPresets(filtered);
+            searchInput.value = ''; // Reset search saat ganti kategori
+        }
+
+        // Fungsi Cari
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const baseData = currentCategory === 'All' ? presets : presets.filter(p => p.category === currentCategory);
+            const filtered = baseData.filter(p => p.title.toLowerCase().includes(val));
+            displayPresets(filtered);
+        });
+
+        // Fungsi Copy
+        function copyLink(text) {
+            navigator.clipboard.writeText(text);
+            alert('Link Preset berhasil disalin!');
+        }
+
+        // Inisialisasi
+        displayPresets(presets);
+    </script>
+</body>
+</html>
